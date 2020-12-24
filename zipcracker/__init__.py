@@ -1,13 +1,13 @@
 '''
 Date: 2020-12-24 16:44:09
 LastEditors: Rustle Karl
-LastEditTime: 2020-12-24 20:40:27
+LastEditTime: 2020-12-24 20:44:54
 '''
 from .zipcracker import ZipCracker
 import color
 
 
-def zipcracker(input_file=None, extractall=True):
+def zipcracker(input_file=None, extractall=False):
     import sys
 
     if len(sys.argv) > 1:

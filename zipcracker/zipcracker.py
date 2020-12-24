@@ -1,7 +1,7 @@
 '''
 Date: 2020-12-23 08:38:30
 LastEditors: Rustle Karl
-LastEditTime: 2020-12-24 20:40:19
+LastEditTime: 2020-12-24 20:59:20
 '''
 import os
 import tempfile
@@ -49,7 +49,7 @@ class ZipCracker(object):
         color.greenln('正在破解密码')
         while not self.__password and not self.queue.empty():
             pwd = self.queue.get()
-            print(color.sblackf(pwd, light=True), end='\r')
+            print('\r'+color.sblackf(pwd, light=True), end=' '*16)
             try:
                 target.setpassword(pwd.encode('utf-8'))
                 target.extractall(path=output)  # 中文乱码，随它吧

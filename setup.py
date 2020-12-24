@@ -1,7 +1,7 @@
 '''
 Date: 2020-12-22 11:29:49
 LastEditors: Rustle Karl
-LastEditTime: 2020-12-24 19:21:04
+LastEditTime: 2020-12-24 20:45:11
 '''
 import os.path
 
@@ -9,7 +9,7 @@ from setuptools import setup
 
 '''
 python setup.py sdist
-pip install dist/zipcracker-0.0.1.tar.gz
+pip install dist/zipcracker-0.0.2.tar.gz
 python setup.py bdist_wheel
 pip install twine
 twine upload dist/*
@@ -32,7 +32,7 @@ with open(os.path.join(cwd, 'README.md'), encoding='utf-8') as f:
 setup(
     name='zipcracker',
     packages=['zipcracker'],
-    version='0.0.1',
+    version='0.0.2',
     license='BSD',
     author='Rustle Karl',
     author_email='fu.jiawei@outlook.com',
