@@ -1,0 +1,1 @@
+C:\Developer\anaconda38\Scripts\zipcracker.exe %*

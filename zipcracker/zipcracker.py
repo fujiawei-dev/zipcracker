@@ -1,7 +1,7 @@
 '''
 Date: 2020-12-23 08:38:30
 LastEditors: Rustle Karl
-LastEditTime: 2020-12-24 16:31:44
+LastEditTime: 2020-12-24 20:40:19
 '''
 import os
 import tempfile
@@ -17,13 +17,18 @@ import py7zr
 from rarfile import RarFile
 from tqdm import tqdm
 
-from zipmd5 import ZipMd5
+from .zipmd5 import ZipMd5
+
+PACKAGE_DIR = os.path.dirname(os.path.realpath(__file__))
+DEFAULT_DICT_FILE = os.path.join(PACKAGE_DIR, 'source.dat')
+DEFAULT_DB_FILE = os.path.join(PACKAGE_DIR, 'zipmd5.db')
 
 
 class ZipCracker(object):
     __password = None
 
-    def __init__(self, pwd_file='storage/source.dat', start=0) -> None:
+    def __init__(self, pwd_file=DEFAULT_DICT_FILE, start=0,
+                 database=DEFAULT_DB_FILE) -> None:
 
         with open(pwd_file, encoding='utf-8') as fp:
             passwords = fp.read().splitlines()
@@ -36,20 +41,18 @@ class ZipCracker(object):
         self.proc = tqdm(total=self.queue.qsize(),
                          desc='暴力破解', ncols=81, mininterval=0.5)
 
-        self.db = ZipMd5()
+        self.db = ZipMd5(database=database)
 
     def __extractall(self, target: Union[ZipFile, RarFile],
                      output: str, extractall=False) -> None:
+
+        color.greenln('正在破解密码')
         while not self.__password and not self.queue.empty():
             pwd = self.queue.get()
+            print(color.sblackf(pwd, light=True), end='\r')
             try:
                 target.setpassword(pwd.encode('utf-8'))
-                if extractall:
-                    target.extractall(path=output)
-                elif hasattr(target, 'testzip'):
-                    target.testzip()
-                elif hasattr(target, 'testrar'):
-                    target.testrar()
+                target.extractall(path=output)  # 中文乱码，随它吧
             except (RuntimeError, zlib.error):
                 pass
             else:
@@ -106,9 +109,11 @@ class ZipCracker(object):
         if password:
             self.proc.close()
             self.__password = password
-            color.greenln('\n成功从数据库中获得密码')
+            color.greenln('成功从数据库中获得密码')
             color.redln(self.__password)
             return self.extractall(input_file, output, password) if extractall else password
+
+        color.redln('\nMD5:\n'+md5)
 
         max_threads = min(16, max_threads)  # 解压是 CPU 密集型，多了无用
 
@@ -137,7 +142,7 @@ class ZipCracker(object):
         self.proc.close()
 
         if self.__password:
-            color.greenln('\n成功从字典中获得密码')
+            color.greenln('成功从字典中获得密码')
             color.redln(self.__password)
             self.db.insert_password(md5, self.__password)
             return self.__password
@@ -146,6 +151,6 @@ class ZipCracker(object):
 
 
 if __name__ == "__main__":
-    keeper = ZipCracker('storage/source.dat', start=0)
-    input_file = 'storage/zip/zip.zip'
-    keeper.find_password(input_file, max_threads=1, extractall=True)
+    input_file = r'H:\Temp\新建文件夹\受虐魅魔.zip'
+    cracker = ZipCracker()
+    cracker.find_password(input_file, max_threads=1, extractall=True)
